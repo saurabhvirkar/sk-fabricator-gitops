@@ -1,0 +1,16 @@
+replicaCount: 1
+
+image:
+  tag: "latest"
+
+resources:
+  limits:
+    cpu: 250m
+    memory: 256Mi
+  requests:
+    cpu: 50m
+    memory: 64Mi
+
+env:
+  ASPNETCORE_ENVIRONMENT: "Development"
+  ALLOWED_ORIGINS: "http://localhost:4200,http://skfabricator.local"

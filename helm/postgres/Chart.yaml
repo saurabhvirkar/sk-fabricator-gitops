@@ -1,0 +1,12 @@
+apiVersion: v2
+name: skfabricator-postgres
+description: PostgreSQL Database Helm Chart for SK Fabricator & Erector
+type: application
+version: 1.0.0
+appVersion: "16-alpine"
+keywords:
+  - postgresql
+  - database
+  - skfabricator
+maintainers:
+  - name: GitOps Team

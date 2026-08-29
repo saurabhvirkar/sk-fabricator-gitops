@@ -1,0 +1,17 @@
+replicaCount: 3
+
+image:
+  tag: "prod"
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+configMap:
+  data:
+    API_URL: "https://api.skfabricator.com"
+    ENVIRONMENT: "production"

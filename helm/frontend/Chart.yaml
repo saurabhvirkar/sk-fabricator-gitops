@@ -1,0 +1,13 @@
+apiVersion: v2
+name: skfabricator-frontend
+description: Helm Chart for SK Fabricator & Erector Frontend UI (Angular 19 + Nginx)
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+keywords:
+  - angular
+  - frontend
+  - nginx
+  - skfabricator
+maintainers:
+  - name: GitOps Team
