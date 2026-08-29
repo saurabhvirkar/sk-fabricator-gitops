@@ -8,7 +8,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: 'https://github.com/saurabhvirkar/sk-gitops-manifests.git'
+    repoURL: 'https://github.com/saurabhvirkar/sk-fabricator-gitops.git'
     targetRevision: HEAD
     path: helm/frontend
     helm:

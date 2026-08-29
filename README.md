@@ -1,13 +1,13 @@
-# SK Fabricator & Erector — GitOps Infrastructure Repository (`sk-gitops-manifests`)
+# SK Fabricator & Erector — GitOps Infrastructure Repository (`sk-fabricator-gitops`)
 
-This repository is the **Single Source of Truth** for deploying and managing the **SK Fabricator & Erector Microservices Architecture** via **GitOps, Helm 3, Kubernetes, and ArgoCD**.
+This repository is the **Single Source of Truth** for deploying and managing the **SK Fabricator & Erector Microservices Architecture** via **GitOps, Helm 3, Kubernetes (Kind), and ArgoCD**.
 
 ---
 
 ## 📁 Repository Structure
 
 ```
-sk-gitops-manifests/
+sk-fabricator-gitops/
 ├── argocd/                            # ArgoCD Application Manifests (App-of-Apps Pattern)
 │   ├── root-application.yaml          # Root controller application
 │   ├── backend-application.yaml       # Backend API ArgoCD application
@@ -20,7 +20,7 @@ sk-gitops-manifests/
 │   └── postgres/                      # PostgreSQL Database Helm Chart
 │
 ├── environments/                      # Environment Configuration Overrides
-│   ├── dev/                           # Local Ubuntu / Minikube Dev values
+│   ├── dev/                           # Local Ubuntu Kind Dev values
 │   ├── staging/                       # Staging Environment values
 │   └── prod/                          # Production AWS / Azure Free Tier values
 │
@@ -29,8 +29,9 @@ sk-gitops-manifests/
 │   └── frontend-gitops-ci.yml         # Copy to Frontend repo when ready
 │
 └── scripts/                           # Local & Cloud Automation Scripts
-    ├── setup-ubuntu-gitops.sh         # Bootstrap K8s, Helm & ArgoCD on Ubuntu
-    ├── sync-local.sh                  # Local Helm rendering & cluster deployment test
+    ├── setup-ubuntu-gitops.sh         # Bootstrap Kind, Helm & ArgoCD on Ubuntu
+    ├── sync-local.sh                  # Build local images & deploy Helm stack
+    ├── cleanup-all.sh                 # Clean up Docker containers & Kind cluster
     ├── LOCAL_UBUNTU_GITOPS_GUIDE.md   # Step-by-step local Ubuntu guide
     └── cloud-migration-guide.md       # AWS & Azure Free Tier deployment guide
 ```
@@ -44,7 +45,7 @@ sk-gitops-manifests/
 ./scripts/setup-ubuntu-gitops.sh
 ```
 
-### 2. Test Local Deployment (No Remote Git Needed)
+### 2. Test Local Deployment (Auto-Build & Deploy)
 ```bash
 ./scripts/sync-local.sh
 ```
@@ -53,13 +54,12 @@ sk-gitops-manifests/
 
 ## 🔗 How to Connect to GitHub Remote Repo
 
-1. Create a new GitHub Repository named **`sk-gitops-manifests`**.
+1. Create a new GitHub Repository named **`sk-fabricator-gitops`**.
 2. Run in this directory:
    ```bash
    git add .
-   git commit -m "feat: initial commit for sk-gitops-manifests microservices repository"
+   git commit -m "feat: initial commit for sk-fabricator-gitops repository"
    git branch -M main
-   git remote add origin https://github.com/YOUR_GITHUB_USERNAME/sk-gitops-manifests.git
+   git remote add origin https://github.com/saurabhvirkar/sk-fabricator-gitops.git
    git push -u origin main
    ```
-3. Update `repoURL` in `argocd/*.yaml` to point to your GitHub URL.
