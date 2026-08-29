@@ -1,17 +1,17 @@
 replicaCount: 1
 
 image:
+  repository: skfabricator-frontend
+  pullPolicy: IfNotPresent
   tag: "latest"
 
 resources:
   limits:
-    cpu: 150m
-    memory: 128Mi
+    cpu: 250m
+    memory: 256Mi
   requests:
-    cpu: 25m
-    memory: 32Mi
+    cpu: 50m
+    memory: 64Mi
 
-configMap:
-  data:
-    API_URL: "http://api.skfabricator.local"
-    ENVIRONMENT: "development"
+env:
+  API_URL: "http://api.skfabricator.local"

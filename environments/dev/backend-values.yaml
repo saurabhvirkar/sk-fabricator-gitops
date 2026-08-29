@@ -1,7 +1,12 @@
 replicaCount: 1
 
 image:
+  repository: skfabricator-backend
+  pullPolicy: IfNotPresent
   tag: "latest"
+
+autoscaling:
+  enabled: false
 
 resources:
   limits:
@@ -13,4 +18,4 @@ resources:
 
 env:
   ASPNETCORE_ENVIRONMENT: "Development"
-  ALLOWED_ORIGINS: "http://localhost:4200,http://skfabricator.local"
+  ALLOWED_ORIGINS: "http://localhost:4200,http://skfabricator.local,http://localhost"
