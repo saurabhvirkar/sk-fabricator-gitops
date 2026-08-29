@@ -1,6 +1,7 @@
 {{- if .Values.autoscaling.enabled -}}
-apiVersion: autoscaling/2beta2
+apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
+
 metadata:
   name: {{ include "backend.fullname" . }}
   labels:
