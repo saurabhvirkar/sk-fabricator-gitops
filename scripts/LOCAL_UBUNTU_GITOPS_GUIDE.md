@@ -1,6 +1,6 @@
-# Complete Step-by-Step Guide: Running GitOps Stack Locally on Ubuntu Terminal
+# Complete Step-by-Step Guide: Running GitOps Stack Locally with Kind (Kubernetes in Docker)
 
-This guide provides basic-to-advanced, copy-paste terminal instructions to install all prerequisites, set up the local Kubernetes cluster, connect **Frontend + Backend + PostgreSQL Database**, and manage the entire environment via **ArgoCD GitOps** on Ubuntu OS.
+This guide provides basic-to-advanced, copy-paste terminal instructions to install all prerequisites, set up the local **Kind (Kubernetes in Docker)** cluster, connect **Frontend + Backend + PostgreSQL Database**, and manage the entire environment via **ArgoCD GitOps** on Ubuntu OS.
 
 ---
 
@@ -47,11 +47,12 @@ curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 helm version
 ```
 
-### 1.5 Install `minikube` (Local Kubernetes Cluster)
+### 1.5 Install `kind` (Kubernetes in Docker)
 ```bash
-curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
-sudo install minikube-linux-amd64 /usr/local/bin/minikube
-minikube version
+curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.27.0/kind-linux-amd64
+chmod +x ./kind
+sudo mv ./kind /usr/local/bin/kind
+kind version
 ```
 
 ### 1.6 Install `argocd` CLI
@@ -63,138 +64,74 @@ rm argocd-linux-amd64
 
 ---
 
-## 🚀 Step 2: Automated 1-Command Local GitOps Bootstrap
+## 🧹 Step 2: Clean Up Previous Docker State (Optional)
 
-Navigate to your workspace directory:
 ```bash
-cd /home/saurabh/Project/sk
+cd /home/saurabh/Project/sk/sk-gitops-manifests
+./scripts/cleanup-all.sh
 ```
 
-Run the automated setup script created for your workspace:
+---
+
+## 🚀 Step 3: Automated 1-Command Kind Cluster Bootstrap
+
 ```bash
-./gitops/scripts/setup-ubuntu-gitops.sh
+cd /home/saurabh/Project/sk/sk-gitops-manifests
+./scripts/setup-ubuntu-gitops.sh
 ```
 
 This will automatically:
-1. Start Minikube with Docker driver and NGINX Ingress controller enabled.
-2. Install ArgoCD into the `argocd` namespace.
-3. Print your ArgoCD local URL and admin password.
+1. Start a **Kind cluster** (`skops`) with port mappings for HTTP (80) & HTTPS (443).
+2. Install NGINX Ingress Controller for Kind.
+3. Install ArgoCD using Server-Side Apply into `argocd` namespace.
+4. Output your ArgoCD admin password.
 
 ---
 
-## 📦 Step 3: Fast Local Testing (Docker Compose Method)
-
-Before Kubernetes, if you want to quickly test Frontend + Backend + Database locally in Docker:
+## ☸️ Step 4: Deploying Full Stack (DB + Backend + Frontend) via Helm to Kind
 
 ```bash
-cd /home/saurabh/Project/sk/SkFabricatorAndErector-Backend
-
-# Start PostgreSQL Database and .NET Backend API
-docker compose up -d --build
-
-# Verify container health
-docker compose ps
-```
-
-Access local endpoints:
-- **Backend API**: `http://localhost:8080/swagger` or `http://localhost:8080/healthz`
-- **PostgreSQL DB**: `localhost:5432` (User: `postgres`, Password: `postgrespassword`, DB: `skfabricatordb`)
-
----
-
-## ☸️ Step 4: Deploying Full Stack (DB + Backend + Frontend) via Helm to K8s
-
-To deploy all three tiers into Kubernetes using Helm:
-
-```bash
-cd /home/saurabh/Project/sk
-
-# Run the full-stack local deployment script
-./gitops/scripts/sync-local.sh
-```
-
-### Manual Helm Commands (Basic to Advanced):
-```bash
-# 1. Deploy Database
-helm upgrade --install postgres-db gitops/helm/postgres
-
-# 2. Deploy Backend API
-helm upgrade --install backend-api gitops/helm/backend -f gitops/environments/dev/backend-values.yaml
-
-# 3. Deploy Frontend UI
-helm upgrade --install frontend-ui gitops/helm/frontend -f gitops/environments/dev/frontend-values.yaml
-
-# 4. Check status of running pods and services
-kubectl get pods -w
-kubectl get svc
-kubectl get ingress
+cd /home/saurabh/Project/sk/sk-gitops-manifests
+./scripts/sync-local.sh
 ```
 
 ---
 
-## 🐙 Step 5: Connecting ArgoCD GitOps Controller (Git as Truth)
+## 🐙 Step 5: Connecting ArgoCD GitOps Controller
 
 ### 5.1 Access ArgoCD UI
-In a separate terminal tab, start port-forwarding:
+In a separate terminal tab:
 ```bash
 kubectl port-forward svc/argocd-server -n argocd 8080:443
 ```
-Open browser: `https://localhost:8080` (Bypass HTTPS warning).
-- **Username**: `admin`
-- **Password**: Get password using:
-  ```bash
-  kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d && echo
-  ```
+Open browser: `https://localhost:8080` (Username: `admin`).
+
+Retrieve admin password:
+```bash
+kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d && echo
+```
 
 ### 5.2 Apply Declarative ArgoCD Applications
 ```bash
-# Deploy all applications via App-of-Apps pattern
-kubectl apply -f gitops/argocd/postgres-application.yaml
-kubectl apply -f gitops/argocd/backend-application.yaml
-kubectl apply -f gitops/argocd/frontend-application.yaml
+kubectl apply -f argocd/postgres-application.yaml
+kubectl apply -f argocd/backend-application.yaml
+kubectl apply -f argocd/frontend-application.yaml
 ```
-
-ArgoCD will now continuously monitor your `gitops/` directory. Whenever you commit changes to Git, ArgoCD will automatically sync the cluster!
 
 ---
 
 ## 🌐 Step 6: Local Ingress & Host Mapping Setup
 
-To access `http://skfabricator.local` and `http://api.skfabricator.local` directly in your browser:
+With **Kind**, because port 80 is mapped directly to `127.0.0.1`, simply add this to `/etc/hosts`:
 
-### 6.1 Get Minikube IP
-```bash
-minikube ip
-```
-*(Example output: `192.168.49.2`)*
-
-### 6.2 Add Host Mappings in `/etc/hosts`
 ```bash
 sudo nano /etc/hosts
 ```
-Add the following line (replace `<MINIKUBE_IP>` with your minikube IP):
+Add line:
 ```text
-<MINIKUBE_IP>   skfabricator.local api.skfabricator.local
+127.0.0.1   skfabricator.local api.skfabricator.local
 ```
 
-Now open:
+Now open directly:
 - **Frontend App**: `http://skfabricator.local`
 - **Backend API**: `http://api.skfabricator.local`
-
----
-
-## 🔍 Step 7: Useful Verification & Troubleshooting Commands
-
-```bash
-# View live logs of Backend API
-kubectl logs -l app.kubernetes.io/instance=backend-api -f
-
-# View live logs of PostgreSQL Database
-kubectl logs -l app=postgres-db -f
-
-# View live logs of Frontend UI
-kubectl logs -l app.kubernetes.io/instance=frontend-ui -f
-
-# Test Database connection from inside Backend Pod
-kubectl exec -it deployment/backend-api -- env | grep ConnectionStrings
-```
