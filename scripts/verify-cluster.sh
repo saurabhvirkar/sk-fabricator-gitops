@@ -16,7 +16,7 @@ echo -e "${BLUE}=== [SK Fabricator GitOps] Cluster Verification Dashboard ===${N
 
 # 1. Namespaces
 echo -e "${BLUE}1. Checking Environment Namespaces...${NC}"
-for ns in sk-fabricator-dev sk-fabricator-stage sk-fabricator-prod argocd; do
+for ns in sk-fabricator-dev argocd; do
   if kubectl get namespace "${ns}" &>/dev/null; then
     echo -e "  [✓] Namespace ${GREEN}${ns}${NC} exists."
   else
