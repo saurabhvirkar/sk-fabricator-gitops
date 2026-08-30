@@ -9,7 +9,7 @@ spec:
   project: skfabricator-dev
   source:
     repoURL: 'https://github.com/saurabhvirkar/sk-fabricator-gitops.git'
-    targetRevision: develop
+    targetRevision: main
     path: charts/backend
     helm:
       valueFiles:
