@@ -3,7 +3,8 @@ kind: Service
 metadata:
   name: postgres
   labels:
-    app: postgres-db
+    app.kubernetes.io/name: {{ include "postgres.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
 spec:
   type: ClusterIP
   ports:
@@ -12,4 +13,5 @@ spec:
       protocol: TCP
       name: postgres
   selector:
-    app: postgres-db
+    app.kubernetes.io/name: {{ include "postgres.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
