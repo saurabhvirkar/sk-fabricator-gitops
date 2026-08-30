@@ -1,0 +1,30 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-non-root-user
+  annotations:
+    policies.kyverno.io/title: Require Non-Root Execution
+    policies.kyverno.io/category: Pod Security Standards (Restricted)
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/subject: Pod
+    description: >-
+      Containers must run as non-root users to limit privilege escalation risks.
+spec:
+  validationFailureAction: Enforce
+  background: true
+  rules:
+    - name: check-run-as-non-root
+      match:
+        any:
+          - resources:
+              namespaces:
+                - sk-fabricator-stage
+                - sk-fabricator-prod
+              kinds:
+                - Pod
+      validate:
+        message: "Containers must have securityContext.runAsNonRoot set to true."
+        pattern:
+          spec:
+            securityContext:
+              runAsNonRoot: true

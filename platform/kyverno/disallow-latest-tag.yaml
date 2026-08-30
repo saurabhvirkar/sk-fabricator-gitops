@@ -1,0 +1,31 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: disallow-latest-tag
+  annotations:
+    policies.kyverno.io/title: Disallow Latest Tag
+    policies.kyverno.io/category: Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: Pod
+    description: >-
+      The ':latest' tag is mutable and makes deployments non-deterministic.
+      This policy enforces explicit semantic version tags or commit SHAs in staging and production.
+spec:
+  validationFailureAction: Enforce
+  background: true
+  rules:
+    - name: validate-image-tag
+      match:
+        any:
+          - resources:
+              namespaces:
+                - sk-fabricator-stage
+                - sk-fabricator-prod
+              kinds:
+                - Pod
+      validate:
+        message: "Using ':latest' or 'dev-latest' image tag is prohibited in stage and prod. Specify a fixed version tag."
+        pattern:
+          spec:
+            containers:
+              - image: "!*:latest & !*:dev-latest"
