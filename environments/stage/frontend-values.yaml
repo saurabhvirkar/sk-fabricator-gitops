@@ -1,4 +1,4 @@
-replicaCount: 2
+replicaCount: 1
 
 image:
   repository: saurabhvirkar/skfabricator-frontend
@@ -7,8 +7,12 @@ image:
 ingress:
   enabled: true
   annotations:
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
   hosts:
+    - host: stage.skfabricator.local
+      paths:
+        - path: /
+          pathType: Prefix
     - host: stage.skfabricator.com
       paths:
         - path: /
@@ -16,5 +20,6 @@ ingress:
 
 configMap:
   data:
-    API_URL: "https://stage-api.skfabricator.com"
+    API_URL: "http://api.stage.skfabricator.local"
     ENVIRONMENT: "stage"
+

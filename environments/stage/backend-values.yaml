@@ -1,4 +1,4 @@
-replicaCount: 2
+replicaCount: 1
 
 image:
   repository: saurabhvirkar/skfabricator-backend
@@ -10,8 +10,12 @@ backendSecret:
 ingress:
   enabled: true
   annotations:
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
   hosts:
+    - host: api.stage.skfabricator.local
+      paths:
+        - path: /
+          pathType: Prefix
     - host: stage-api.skfabricator.com
       paths:
         - path: /
@@ -19,9 +23,10 @@ ingress:
 
 env:
   ASPNETCORE_ENVIRONMENT: "Stage"
-  ALLOWED_ORIGINS: "https://stage.skfabricator.com"
+  ALLOWED_ORIGINS: "http://stage.skfabricator.local,https://stage.skfabricator.com"
 
 configMap:
   data:
     Logging__LogLevel__Default: "Information"
     Logging__LogLevel__Microsoft.AspNetCore: "Warning"
+

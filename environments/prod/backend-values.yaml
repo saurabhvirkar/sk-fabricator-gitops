@@ -1,4 +1,4 @@
-replicaCount: 3
+replicaCount: 1
 
 image:
   repository: saurabhvirkar/skfabricator-backend
@@ -11,8 +11,12 @@ ingress:
   enabled: true
   annotations:
     kubernetes.io/ingress.class: "nginx"
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
   hosts:
+    - host: api.prod.skfabricator.local
+      paths:
+        - path: /
+          pathType: Prefix
     - host: api.skfabricator.com
       paths:
         - path: /
@@ -20,15 +24,10 @@ ingress:
 
 env:
   ASPNETCORE_ENVIRONMENT: "Production"
-  ALLOWED_ORIGINS: "https://skfabricator.com"
+  ALLOWED_ORIGINS: "http://prod.skfabricator.local,https://skfabricator.com"
 
 configMap:
   data:
     Logging__LogLevel__Default: "Warning"
     Logging__LogLevel__Microsoft.AspNetCore: "Error"
 
-autoscaling:
-  enabled: true
-  minReplicas: 3
-  maxReplicas: 10
-  targetCPUUtilizationPercentage: 75

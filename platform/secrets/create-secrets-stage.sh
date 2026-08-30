@@ -20,6 +20,7 @@ kubectl create secret generic backend-api-secrets \
   --namespace="${NAMESPACE}" \
   --from-literal=ConnectionStrings__DefaultConnection="Host=postgres;Port=5432;Database=skfabricatordb;Username=postgres;Password=${STAGE_POSTGRES_PASSWORD:-stagepassword123}" \
   --from-literal=JwtSettings__Secret="${STAGE_JWT_SECRET:-StageSecretKeyForJWTAuth1234567890}" \
+  --from-literal=Jwt__Key="${STAGE_JWT_SECRET:-StageSecretKeyForJWTAuth1234567890}" \
   --from-literal=CloudinarySettings__CloudName="${STAGE_CLOUDINARY_CLOUD:-stage-cloud}" \
   --from-literal=CloudinarySettings__ApiKey="${STAGE_CLOUDINARY_KEY:-stage-key}" \
   --from-literal=CloudinarySettings__ApiSecret="${STAGE_CLOUDINARY_SECRET:-stage-secret}" \
