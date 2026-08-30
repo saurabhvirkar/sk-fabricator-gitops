@@ -31,10 +31,12 @@ kubectl apply -f "${REPO_DIR}/platform/network-policies/" -n sk-fabricator-dev
 echo "5. Applying Argo CD AppProjects..."
 kubectl apply -f "${REPO_DIR}/bootstrap/argocd-projects/"
 
-# 6. Apply Root Application
-echo "6. Registering Root Argo CD Application..."
+# 6. Apply Root Application & ArgoCD Ingress
+echo "6. Registering Root Argo CD Application & Ingress..."
+kubectl patch configmap argocd-cmd-params-cm -n argocd --type merge -p '{"data":{"server.insecure":"true"}}' 2>/dev/null || true
 kubectl apply -f "${REPO_DIR}/argocd/root-application.yaml"
 kubectl apply -f "${REPO_DIR}/platform/ingress/argocd-ingress.yaml"
+
 
 # Optional: Uncomment below lines to enable stage and prod workloads locally if needed:
 # kubectl apply -f "${REPO_DIR}/argocd/stage/"
