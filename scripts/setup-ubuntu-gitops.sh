@@ -91,8 +91,13 @@ kubectl apply --server-side -n argocd -f https://raw.githubusercontent.com/argop
 echo -e "${YELLOW}Waiting for ArgoCD server deployment to roll out...${NC}"
 kubectl rollout status deployment/argocd-server -n argocd --timeout=180s || true
 
-# 5. Expose ArgoCD Server & Retrieve Admin Credentials
-echo -e "\n${BLUE}5. ArgoCD Credentials & Access Information:${NC}"
+# 5. Bootstrap SK Fabricator Namespaces, Secrets & Argo CD Applications
+echo -e "\n${BLUE}5. Bootstrapping SK Fabricator GitOps Stack...${NC}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+"${SCRIPT_DIR}/bootstrap-cluster.sh"
+
+# 6. Expose ArgoCD Server & Retrieve Admin Credentials
+echo -e "\n${BLUE}6. ArgoCD Credentials & Access Information:${NC}"
 ARGOCD_PASS=$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d 2>/dev/null || echo "Check argocd secrets")
 
 echo -e "${GREEN}=====================================================${NC}"
