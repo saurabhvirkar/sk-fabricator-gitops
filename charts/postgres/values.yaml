@@ -1,0 +1,26 @@
+replicaCount: 1
+
+image:
+  repository: postgres
+  tag: "16-alpine"
+  pullPolicy: IfNotPresent
+
+postgres:
+  database: skfabricatordb
+  user: postgres
+  # Password is NOT stored in Git/Helm values. Refer to existingSecret in production.
+  existingSecret: ""
+  port: 5432
+
+persistence:
+  enabled: true
+  size: 5Gi
+  storageClass: ""
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi

@@ -1,21 +1,24 @@
 replicaCount: 1
 
 image:
-  repository: skfabricator-backend
-  pullPolicy: IfNotPresent
-  tag: "latest"
+  repository: ghcr.io/saurabhvirkar/skfabricator-backend
+  tag: "dev-latest"
 
-autoscaling:
-  enabled: false
-
-resources:
-  limits:
-    cpu: 250m
-    memory: 256Mi
-  requests:
-    cpu: 50m
-    memory: 64Mi
+ingress:
+  enabled: true
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+  hosts:
+    - host: api.skfabricator.local
+      paths:
+        - path: /
+          pathType: Prefix
 
 env:
   ASPNETCORE_ENVIRONMENT: "Development"
-  ALLOWED_ORIGINS: "http://localhost:4200,http://skfabricator.local,http://localhost"
+  ALLOWED_ORIGINS: "http://localhost,http://skfabricator.local"
+
+configMap:
+  data:
+    Logging__LogLevel__Default: "Debug"
+    Logging__LogLevel__Microsoft.AspNetCore: "Information"

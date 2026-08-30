@@ -3,7 +3,7 @@ name: GitOps Frontend CI (Docker Build & Registry Push)
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ develop, main ]
     paths:
       - 'src/**'
       - 'public/**'
@@ -11,7 +11,7 @@ on:
       - 'package.json'
       - 'nginx.conf'
   pull_request:
-    branches: [ main, develop ]
+    branches: [ develop, main ]
   workflow_dispatch:
 
 env:

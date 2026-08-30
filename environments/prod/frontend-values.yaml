@@ -1,7 +1,20 @@
 replicaCount: 3
 
 image:
-  tag: "prod"
+  repository: ghcr.io/saurabhvirkar/skfabricator-frontend
+  tag: "1.0.0"
+
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/limit-rps: "50"
+  hosts:
+    - host: skfabricator.com
+      paths:
+        - path: /
+          pathType: Prefix
 
 resources:
   limits:

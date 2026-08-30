@@ -3,13 +3,13 @@ name: GitOps Backend CI (Docker Build & Registry Push)
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ develop, main ]
     paths:
       - 'src/**'
       - 'Dockerfile'
       - 'SkFabricatorAndErector.slnx'
   pull_request:
-    branches: [ main, develop ]
+    branches: [ develop, main ]
   workflow_dispatch:
 
 env:

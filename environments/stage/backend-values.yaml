@@ -1,0 +1,24 @@
+replicaCount: 2
+
+image:
+  repository: ghcr.io/saurabhvirkar/skfabricator-backend
+  tag: "1.0.0-rc.1"
+
+ingress:
+  enabled: true
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+  hosts:
+    - host: stage-api.skfabricator.com
+      paths:
+        - path: /
+          pathType: Prefix
+
+env:
+  ASPNETCORE_ENVIRONMENT: "Stage"
+  ALLOWED_ORIGINS: "https://stage.skfabricator.com"
+
+configMap:
+  data:
+    Logging__LogLevel__Default: "Information"
+    Logging__LogLevel__Microsoft.AspNetCore: "Warning"

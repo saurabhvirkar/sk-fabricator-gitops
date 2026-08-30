@@ -1,0 +1,17 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: skfabricator-stage
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  description: Stage environment project for SK Fabricator
+  sourceRepos:
+    - 'https://github.com/saurabhvirkar/sk-fabricator-gitops.git'
+  destinations:
+    - namespace: sk-fabricator-stage
+      server: 'https://kubernetes.default.svc'
+  namespaceResourceWhitelist:
+    - group: '*'
+      kind: '*'

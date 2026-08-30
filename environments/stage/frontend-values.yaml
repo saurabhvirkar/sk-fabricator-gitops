@@ -1,0 +1,20 @@
+replicaCount: 2
+
+image:
+  repository: ghcr.io/saurabhvirkar/skfabricator-frontend
+  tag: "1.0.0-rc.1"
+
+ingress:
+  enabled: true
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+  hosts:
+    - host: stage.skfabricator.com
+      paths:
+        - path: /
+          pathType: Prefix
+
+configMap:
+  data:
+    API_URL: "https://stage-api.skfabricator.com"
+    ENVIRONMENT: "stage"

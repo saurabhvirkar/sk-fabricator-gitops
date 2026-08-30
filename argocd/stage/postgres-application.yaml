@@ -1,19 +1,22 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: skfabricator-root
+  name: skfabricator-postgres-stage
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
-  project: default
+  project: skfabricator-stage
   source:
     repoURL: 'https://github.com/saurabhvirkar/sk-fabricator-gitops.git'
     targetRevision: main
-    path: argocd/dev
+    path: charts/postgres
+    helm:
+      valueFiles:
+        - '../../environments/stage/postgres-values.yaml'
   destination:
     server: 'https://kubernetes.default.svc'
-    namespace: argocd
+    namespace: sk-fabricator-stage
   syncPolicy:
     automated:
       prune: true

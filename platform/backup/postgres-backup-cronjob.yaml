@@ -1,0 +1,39 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: postgres-backup
+spec:
+  schedule: "0 2 * * *" # Daily at 02:00 AM UTC
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: postgres-backup
+              image: postgres:16-alpine
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -e
+                  TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+                  FILENAME="/backups/postgres_backup_${TIMESTAMP}.sql.gz"
+                  echo "Starting PostgreSQL backup to ${FILENAME}..."
+                  pg_dump -h postgres -U postgres -d skfabricatordb | gzip > ${FILENAME}
+                  echo "Backup complete. Retaining last 7 backups..."
+                  ls -tp /backups/postgres_backup_*.sql.gz | tail -n +8 | xargs -I {} rm -- {} || true
+              env:
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: postgres-secret
+                      key: POSTGRES_PASSWORD
+              volumeMounts:
+                - name: backup-storage
+                  mountPath: /backups
+          restartPolicy: OnFailure
+          volumes:
+            - name: backup-storage
+              persistentVolumeClaim:
+                claimName: postgres-backup-pvc

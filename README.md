@@ -1,6 +1,16 @@
 # SK Fabricator & Erector — GitOps Infrastructure Repository (`sk-fabricator-gitops`)
 
-This repository is the **Single Source of Truth** for deploying and managing the **SK Fabricator & Erector Microservices Architecture** via **GitOps, Helm 3, Kubernetes (Kind), and ArgoCD**.
+This repository serves as the **Single Source of Truth** for deploying and managing the **SK Fabricator & Erector Platform** using **GitOps, Helm 3, Kubernetes (K3s/Kind), and Argo CD**.
+
+---
+
+## 🏗 Stack Overview
+
+- **Frontend**: Angular 21.2.x + Nginx (Multi-Stage Docker, Hardened Non-Root Container)
+- **Backend**: ASP.NET Core 10 Web API (Clean Architecture, Non-Root Container, EF Core, JWT Auth)
+- **Database**: PostgreSQL 16 (StatefulSet, Volume Claims, Secret Credentials)
+- **GitOps Controller**: Argo CD (App-of-Apps, Environment AppProjects)
+- **Security**: Kubernetes Restricted Pod Security Standards, Zero-Trust NetworkPolicies, No Plaintext Secrets in Git
 
 ---
 
@@ -8,58 +18,69 @@ This repository is the **Single Source of Truth** for deploying and managing the
 
 ```
 sk-fabricator-gitops/
-├── argocd/                            # ArgoCD Application Manifests (App-of-Apps Pattern)
-│   ├── root-application.yaml          # Root controller application
-│   ├── backend-application.yaml       # Backend API ArgoCD application
-│   ├── frontend-application.yaml      # Frontend UI ArgoCD application
-│   └── postgres-application.yaml      # PostgreSQL DB ArgoCD application
+├── bootstrap/                         # Infrastructure Bootstrap Manifests
+│   ├── namespaces/                    # Environment Namespaces (dev, staging, prod)
+│   └── argocd-projects/               # Argo CD AppProject Definitions
 │
-├── helm/                              # Microservices Production Helm 3 Charts
-│   ├── backend/                       # .NET 10 API Helm Chart
-│   ├── frontend/                      # Angular 19 + Nginx UI Helm Chart
-│   └── postgres/                      # PostgreSQL Database Helm Chart
+├── argocd/                            # Argo CD Application Manifests
+│   ├── dev/                           # Dev Environment Applications
+│   ├── staging/                       # Staging Environment Applications
+│   ├── prod/                          # Production Environment Applications
+│   └── root-application.yaml          # Root App-of-Apps Generator
 │
-├── environments/                      # Environment Configuration Overrides
-│   ├── dev/                           # Local Ubuntu Kind Dev values
-│   ├── staging/                       # Staging Environment values
-│   └── prod/                          # Production AWS / Azure Free Tier values
+├── charts/                            # Hardened Microservice Helm Charts
+│   ├── backend/                       # ASP.NET Core 10 API Helm Chart
+│   ├── frontend/                      # Angular 21 UI Helm Chart
+│   └── postgres/                      # PostgreSQL StatefulSet Helm Chart
 │
-├── workflows/                         # GitHub Action CI Templates
-│   ├── backend-gitops-ci.yml          # Copy to Backend repo when ready
-│   └── frontend-gitops-ci.yml         # Copy to Frontend repo when ready
+├── environments/                      # Environment Value Overrides
+│   ├── dev/                           # Local Development Overrides
+│   ├── staging/                       # Staging Environment Overrides
+│   └── prod/                          # Production Environment Overrides
 │
-└── scripts/                           # Local & Cloud Automation Scripts
-    ├── setup-ubuntu-gitops.sh         # Bootstrap Kind, Helm & ArgoCD on Ubuntu
-    ├── sync-local.sh                  # Build local images & deploy Helm stack
-    ├── cleanup-all.sh                 # Clean up Docker containers & Kind cluster
-    ├── LOCAL_UBUNTU_GITOPS_GUIDE.md   # Step-by-step local Ubuntu guide
-    └── cloud-migration-guide.md       # AWS & Azure Free Tier deployment guide
+├── platform/                          # Cluster Security & Governance
+│   ├── network-policies/              # Zero-Trust Pod Isolation Policies
+│   ├── pod-security/                  # Pod Security Standards & Policies
+│   ├── resource-quotas/               # ResourceQuota & LimitRange Manifests
+│   ├── ingress/                       # Cloudflare & Nginx Routing
+│   └── backup/                        # PostgreSQL Backup CronJobs
+│
+├── scripts/                           # Local & Cloud Deployment Automation
+└── docs/                              # Architecture, Security, & Operational Runbooks
+    ├── architecture/                  # Architectural Overview & Topology
+    ├── security/                      # Security Architecture & Controls
+    └── runbooks/                      # Ops Runbooks (Deploy, Rollback, DB Backup/Restore)
 ```
 
 ---
 
-## 🚀 Quick Start on Local Ubuntu Terminal
+## 🔒 Security Architecture Highlights
 
-### 1. Bootstrap Local K8s & ArgoCD
+1. **No Plaintext Passwords**: Database passwords and API keys are injected exclusively via Kubernetes `Secret` objects.
+2. **Immutable Artifact Promotion**: Deployments reference explicit container image tags (`1.0.0`) and SHA256 digests rather than mutable `latest` tags.
+3. **Zero-Trust NetworkPolicies**: Default-deny all traffic except explicit flow: `Ingress -> Frontend -> Backend -> PostgreSQL`.
+4. **Restricted Pod Security**: All containers run with `runAsNonRoot: true`, `allowPrivilegeEscalation: false`, and `capabilities.drop: ["ALL"]`.
+
+---
+
+## 🚀 Quick Start (Development Bootstrap)
+
+### 1. Apply Infrastructure Namespaces & AppProjects
 ```bash
-./scripts/setup-ubuntu-gitops.sh
+kubectl apply -f bootstrap/namespaces/namespaces.yaml
+kubectl apply -f bootstrap/argocd-projects/
 ```
 
-### 2. Test Local Deployment (Auto-Build & Deploy)
+### 2. Register Root Argo CD Application
 ```bash
-./scripts/sync-local.sh
+kubectl apply -f argocd/root-application.yaml
 ```
 
 ---
 
-## 🔗 How to Connect to GitHub Remote Repo
+## 📚 Operational Runbooks
 
-1. Create a new GitHub Repository named **`sk-fabricator-gitops`**.
-2. Run in this directory:
-   ```bash
-   git add .
-   git commit -m "feat: initial commit for sk-fabricator-gitops repository"
-   git branch -M main
-   git remote add origin https://github.com/saurabhvirkar/sk-fabricator-gitops.git
-   git push -u origin main
-   ```
+Refer to [docs/runbooks/](docs/runbooks/) for step-by-step guidance on:
+- [Deployment & Environment Promotion](docs/runbooks/deploy.md)
+- [Rollback Strategy](docs/runbooks/rollback.md)
+- [Database Backup & Disaster Recovery](docs/runbooks/database-backup-restore.md)
