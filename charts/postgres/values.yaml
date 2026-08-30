@@ -8,8 +8,7 @@ image:
 postgres:
   database: skfabricatordb
   user: postgres
-  # Password is NOT stored in Git/Helm values. Refer to existingSecret in production.
-  existingSecret: ""
+  existingSecret: "postgres-secret"
   port: 5432
 
 persistence:

@@ -4,6 +4,9 @@ image:
   repository: ghcr.io/saurabhvirkar/skfabricator-backend
   tag: "dev-latest"
 
+backendSecret:
+  existingSecret: "backend-api-secrets"
+
 ingress:
   enabled: true
   annotations:

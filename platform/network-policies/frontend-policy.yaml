@@ -5,16 +5,15 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      app.kubernetes.io/name: frontend
+      app.kubernetes.io/name: skfabricator-frontend
   policyTypes:
     - Ingress
     - Egress
   ingress:
     - from:
-        - namespaceSelector: {}
-          podSelector:
+        - namespaceSelector:
             matchLabels:
-              app.kubernetes.io/name: ingress-nginx
+              kubernetes.io/metadata.name: ingress-nginx
       ports:
         - protocol: TCP
           port: 80
@@ -22,7 +21,7 @@ spec:
     - to:
         - podSelector:
             matchLabels:
-              app.kubernetes.io/name: backend
+              app.kubernetes.io/name: skfabricator-backend
       ports:
         - protocol: TCP
           port: 8080

@@ -1,13 +1,8 @@
-replicaCount: 1
+postgres:
+  database: skfabricatordb
+  user: postgres
+  existingSecret: "postgres-secret"
 
 persistence:
   enabled: true
   size: 5Gi
-
-resources:
-  limits:
-    cpu: 500m
-    memory: 512Mi
-  requests:
-    cpu: 100m
-    memory: 128Mi

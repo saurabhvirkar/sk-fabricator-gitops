@@ -1,4 +1,7 @@
-replicaCount: 1
+postgres:
+  database: skfabricatordb
+  user: postgres
+  existingSecret: "postgres-secret"
 
 persistence:
   enabled: true

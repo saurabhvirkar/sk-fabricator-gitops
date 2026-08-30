@@ -69,7 +69,7 @@ env:
   ALLOWED_ORIGINS: "https://skfabricator.com"
 
 backendSecret:
-  existingSecret: ""
+  existingSecret: "backend-api-secrets"
   connectionString: "Host=postgres;Port=5432;Database=skfabricatordb;Username=postgres;Password=postgrespassword"
   jwtSecret: "SuperSecretKeyForDevelopmentOnly1234567890"
   cloudinaryCloudName: ""

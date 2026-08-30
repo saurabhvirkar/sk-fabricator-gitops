@@ -5,7 +5,7 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      app.kubernetes.io/name: backend
+      app.kubernetes.io/name: skfabricator-backend
   policyTypes:
     - Ingress
     - Egress
@@ -13,11 +13,10 @@ spec:
     - from:
         - podSelector:
             matchLabels:
-              app.kubernetes.io/name: frontend
-        - namespaceSelector: {}
-          podSelector:
+              app.kubernetes.io/name: skfabricator-frontend
+        - namespaceSelector:
             matchLabels:
-              app.kubernetes.io/name: ingress-nginx
+              kubernetes.io/metadata.name: ingress-nginx
       ports:
         - protocol: TCP
           port: 8080
@@ -25,7 +24,7 @@ spec:
     - to:
         - podSelector:
             matchLabels:
-              app.kubernetes.io/name: postgres
+              app.kubernetes.io/name: skfabricator-postgres
       ports:
         - protocol: TCP
           port: 5432
@@ -38,7 +37,7 @@ spec:
           port: 53
         - protocol: TCP
           port: 53
-    # Allow outbound HTTPS for external APIs (Cloudinary, SMTP)
+    # Allow outbound HTTPS/SMTP for external APIs (Cloudinary, MailKit)
     - to:
         - ipBlock:
             cidr: 0.0.0.0/0

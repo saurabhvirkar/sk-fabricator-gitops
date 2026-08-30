@@ -5,14 +5,14 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      app.kubernetes.io/name: postgres
+      app.kubernetes.io/name: skfabricator-postgres
   policyTypes:
     - Ingress
   ingress:
     - from:
         - podSelector:
             matchLabels:
-              app.kubernetes.io/name: backend
+              app.kubernetes.io/name: skfabricator-backend
       ports:
         - protocol: TCP
           port: 5432
